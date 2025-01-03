@@ -118,10 +118,12 @@ def check_answer(update: Update, context: CallbackContext):
 
             db = get_db()  # db obyektini burada təyin edin
 
-            # İstifadəçinin doğru cavab sayını artırın
+            # İstifadəçinin doğru cavab sayını və ümumi xalı artırın
             db.user_groups.update_one(
                 {'user_id': update.effective_user.id, 'group_id': chat_id},
-                {'$inc': {'correct_answers': 1}},
+                {
+                    '$inc': {'correct_answers': 1, 'total_score': 10}  # Xalı artırmaq üçün dəyəri burada təyin edin
+                },
                 upsert=True
             )
 
@@ -158,6 +160,8 @@ def check_answer(update: Update, context: CallbackContext):
         except Exception as error:
             logging.error('Xal yeniləmə xətası: %s', error)
             context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
+
+
 
 def current_group(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
