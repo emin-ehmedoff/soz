@@ -1,6 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from database.scores import update_scores
+from words import words  # words obyektini burada import edin
 import random
 import logging
 import time
