@@ -1,6 +1,92 @@
 # database/scores.py
 from .models import get_db
 
+
+import os
+from pymongo import MongoClient
+from dotenv import load_dotenv
+
+# .env faylını yükləyin
+load_dotenv()
+
+# MongoDB müştərisini yaradın (URL-i .env faylından oxuyun)
+MONGODB_URI = os.getenv('MONGODB_URI')
+client = MongoClient(MONGODB_URI)
+
+# Verilənlər bazası adını .env faylından oxuyun
+DATABASE_NAME = os.getenv('DATABASE_NAME')
+db = client[DATABASE_NAME]
+
+def get_user_group_info(user_id, group_id):
+    user_group_info = db.user_groups.find_one({
+        'user_id': user_id,
+        'group_id': group_id
+    })
+
+    if user_group_info:
+        return {
+            'correct_answers': user_group_info.get('correct_answers', 0),
+            'host_count': user_group_info.get('host_count', 0),
+            'rank': get_group_rank(user_id, group_id),
+            'total_score': user_group_info.get('score', 0)
+        }
+    else:
+        return None
+
+def get_user_global_info(user_id):
+    user_global_info = db.user_groups.aggregate([
+        {'$match': {'user_id': user_id}},
+        {
+            '$group': {
+                '_id': '$user_id',
+                'correct_answers': {'$sum': '$correct_answers'},
+                'host_count': {'$sum': '$host_count'},
+                'total_score': {'$sum': '$score'}
+            }
+        }
+    ])
+
+    user_global_info = list(user_global_info)
+    if user_global_info:
+        return {
+            'correct_answers': user_global_info[0].get('correct_answers', 0),
+            'host_count': user_global_info[0].get('host_count', 0),
+            'rank': get_global_rank(user_id),
+            'total_score': user_global_info[0].get('total_score', 0)
+        }
+    else:
+        return None
+
+def get_group_rank(user_id, group_id):
+    scores = db.user_groups.find({'group_id': group_id}).sort('score', -1)
+    rank = 1
+    for score in scores:
+        if score['user_id'] == user_id:
+            return rank
+        rank += 1
+    return rank
+
+def get_global_rank(user_id):
+    scores = db.user_groups.aggregate([
+        {
+            '$group': {
+                '_id': '$user_id',
+                'total_score': {'$sum': '$score'}
+            }
+        },
+        {'$sort': {'total_score': -1}}
+    ])
+    rank = 1
+    for score in scores:
+        if score['_id'] == user_id:
+            return rank
+        rank += 1
+    return rank
+
+
+
+
+
 def update_scores(user_id, first_name, group_id, group_name, points=1):
     db = get_db()
 
