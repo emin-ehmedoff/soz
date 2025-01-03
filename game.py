@@ -126,12 +126,6 @@ def check_answer(update: Update, context: CallbackContext):
             )
 
             if game.mode == "full":
-                # Mövcud aparıcının aparıcı sayını artırın
-                db.user_groups.update_one(
-                    {'user_id': game.host['id'], 'group_id': chat_id},
-                    {'$inc': {'host_count': 1}},
-                    upsert=True
-                )
                 game.set_host(update.effective_user.id, update.effective_user.username)
                 db.user_groups.update_one(
                     {'user_id': update.effective_user.id, 'group_id': chat_id},
@@ -139,12 +133,6 @@ def check_answer(update: Update, context: CallbackContext):
                     upsert=True
                 )
             else:
-                # Aparıcı rejimində mövcud aparıcının aparıcı sayını artırın
-                db.user_groups.update_one(
-                    {'user_id': game.host['id'], 'group_id': chat_id},
-                    {'$inc': {'host_count': 1}},
-                    upsert=True
-                )
                 old_word = game.current_word
                 while game.current_word == old_word:
                     game.current_word = random.choice(words)
