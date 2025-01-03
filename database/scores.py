@@ -133,7 +133,6 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
     except Exception as e:
         logger.error(f"Error updating scores: {e}")
 
-
 def get_top_users(limit=25):
     db = get_db()
     try:
