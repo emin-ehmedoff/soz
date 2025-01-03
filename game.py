@@ -119,6 +119,13 @@ def check_answer(update: Update, context: CallbackContext):
 
             db = get_db()  # db obyektini burada təyin edin
 
+            # İstifadəçinin doğru cavab sayını artırın
+            db.user_groups.update_one(
+                {'user_id': update.effective_user.id, 'group_id': chat_id},
+                {'$inc': {'correct_answers': 1}},
+                upsert=True
+            )
+
             # Aparıcı sayını artır, yalnız mövcud aparıcının aparıcı sayısını artır
             db.user_groups.update_one(
                 {'user_id': game.host['id'], 'group_id': chat_id},
@@ -139,6 +146,19 @@ def check_answer(update: Update, context: CallbackContext):
                     InlineKeyboardButton("🔄 Sözü dəyiş", callback_data='change_word')
                 ],
                 [InlineKeyboardButton("❌ Aparıcılıqdan çıx", callback_data='quit_host')]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
+            message = (
+                f"🎯 Təbriklər! [{update.effective_user.first_name}](tg://user?id={update.effective_user.id}) düzgün cavab verdi!\n"
+                f"{'👑 Aparıcı dəyişmədi, çünki oyun aparıcı rejimindədir!' if game.mode == 'host' else f'👑 İndi [{update.effective_user.first_name}](tg://user?id={update.effective_user.id}) yeni aparıcıdır!'}"
+            )
+
+            context.bot.send_message(chat_id, message, reply_markup=reply_markup, parse_mode='Markdown')
+
+        except Exception as error:
+            logging.error('Xal yeniləmə xətası: %s', error)
+            context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
 
