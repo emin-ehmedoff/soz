@@ -87,45 +87,52 @@ def get_global_rank(user_id):
 def update_scores(user_id, first_name, group_id, group_name, correct_answers_increment=0, host_count_increment=0, score_increment=0):
     db = get_db()
 
-    # Update user score
-    db.users.update_one(
-        {'user_id': user_id},
-        {
-            '$set': {'first_name': first_name},
-            '$inc': {'totalScore': score_increment}
-        },
-        upsert=True
-    )
-
-    # Update group score
-    db.groups.update_one(
-        {'group_id': group_id},
-        {
-            '$set': {'groupName': group_name},
-            '$inc': {'totalScore': score_increment}
-        },
-        upsert=True
-    )
-
-    # Update user-group relationship
-    db.user_groups.update_one(
-        {
-            'user_id': user_id,
-            'group_id': group_id
-        },
-        {
-            '$inc': {
-                'score': score_increment,
-                'correct_answers': correct_answers_increment,
-                'host_count': host_count_increment
+    try:
+        # Update user score
+        db.users.update_one(
+            {'user_id': user_id},
+            {
+                '$set': {'first_name': first_name},
+                '$inc': {'totalScore': score_increment}
             },
-            '$set': {
-                'first_name': first_name,
-                'groupName': group_name
-            }
-        },
-        upsert=True
-    )
+            upsert=True
+        )
+        logger.info(f"User {user_id} score updated successfully.")
+
+        # Update group score
+        db.groups.update_one(
+            {'group_id': group_id},
+            {
+                '$set': {'groupName': group_name},
+                '$inc': {'totalScore': score_increment}
+            },
+            upsert=True
+        )
+        logger.info(f"Group {group_id} score updated successfully.")
+
+        # Update user-group relationship
+        db.user_groups.update_one(
+            {
+                'user_id': user_id,
+                'group_id': group_id
+            },
+            {
+                '$inc': {
+                    'score': score_increment,
+                    'correct_answers': correct_answers_increment,
+                    'host_count': host_count_increment
+                },
+                '$set': {
+                    'first_name': first_name,
+                    'groupName': group_name
+                }
+            },
+            upsert=True
+        )
+        logger.info(f"User-group relationship for user {user_id} and group {group_id} updated successfully.")
+    except Exception as e:
+        logger.error(f"Error updating scores: {e}")
+
 
 def get_top_users(limit=25):
     db = get_db()
