@@ -61,7 +61,7 @@ def stop_game(update: Update, context: CallbackContext):
     del games[chat_id]
     context.bot.send_message(chat_id, "🛑 Oyun dayandırıldı!")
 
-def start_game(update: Update, context: CallbackContext):
+def game(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
 
     if update.effective_chat.type not in ['group', 'supergroup']:
