@@ -66,7 +66,15 @@ def show_current_group(update: Update, context: CallbackContext):
 
         leaderboard = "🏅 Cari Qrup üzrə Top 25 İstifadəçi:\n\n"
         for index, user in enumerate(users, 1):
-            leaderboard += f"{index}. {user['first_name']} - {user['score']} xal\n"
+            if 'first_name' in user and 'score' in user:
+                leaderboard += f"{index}. {user['first_name']} - {user['score']} xal\n"
+            else:
+                logger.error(f"Missing data for user: {user}")
+
+        context.bot.send_message(chat_id, leaderboard)
+    except Exception as error:
+        logger.error('Qrup top oyunçular xətası: %s', error)
+        context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
         context.bot.send_message(chat_id, leaderboard)
     except Exception as error:
