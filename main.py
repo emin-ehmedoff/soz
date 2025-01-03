@@ -1,7 +1,7 @@
 import os
 import random
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Chat
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler, CallbackContext, Filters
 from dotenv import load_dotenv
 from database.scores import update_scores, get_top_users, get_top_groups, get_group_top_users
