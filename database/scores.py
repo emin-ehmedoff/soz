@@ -164,3 +164,16 @@ def get_group_top_users(group_id, limit=25):
     except Exception as e:
         logger.error(f"Error fetching top users for group {group_id}: {e}")
         return []
+
+def get_top_users(limit=25):
+    db = get_db()
+    try:
+        users = list(db.users.find(
+            {},
+            {'_id': 0, 'user_id': 1, 'first_name': 1, 'totalScore': 1}
+        ).sort('totalScore', -1).limit(limit))
+        logger.info(f"Top users fetched successfully.")
+        return users
+    except Exception as e:
+        logger.error(f"Error fetching top users: {e}")
+        return []
