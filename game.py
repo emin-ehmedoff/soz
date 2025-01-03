@@ -132,7 +132,6 @@ def check_answer(update: Update, context: CallbackContext):
                 upsert=True
             )
 
-            # Tam oyun rejimində aparıcı dəyişir
             if game.mode == "full":
                 game.set_host(update.effective_user.id, update.effective_user.username)
             else:
