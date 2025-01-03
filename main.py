@@ -103,8 +103,10 @@ def show_user_rating(update: Update, context: CallbackContext):
         logger.error('İstifadəçi reytinqi xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
+
 def show_top_hosts(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
+    db = get_db()  # db obyektini burada təyin edin
     try:
         # Müvafiq məlumatları əldə edin (bu hissəni öz tələblərinizə uyğunlaşdırın)
         hosts = db.user_groups.aggregate([
@@ -132,7 +134,6 @@ def show_top_hosts(update: Update, context: CallbackContext):
     except Exception as error:
         logger.error('Top aparıcılar xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
-
 
 
 def start_bot():
