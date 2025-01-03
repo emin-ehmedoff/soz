@@ -1,8 +1,8 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from database.scores import update_scores
-from words import words  # words obyektini burada import edin
-from database.models import get_db  # db obyektini burada import edin
+from words import words
+from database.models import get_db
 import random
 import logging
 import time
@@ -121,6 +121,12 @@ def check_answer(update: Update, context: CallbackContext):
 
             # Əgər tam rejimdirsə, aparıcı dəyişdirilir və aparıcı sayını artırırıq
             if game.mode == "full":
+                # Mövcud aparıcının aparıcı sayını artırın
+                db.user_groups.update_one(
+                    {'user_id': game.host['id'], 'group_id': chat_id},
+                    {'$inc': {'host_count': 1}},
+                    upsert=True
+                )
                 game.set_host(update.effective_user.id, update.effective_user.username)
                 db.user_groups.update_one(
                     {'user_id': update.effective_user.id, 'group_id': chat_id},
@@ -304,4 +310,4 @@ def button_callback(update: Update, context: CallbackContext):
             query.id,
             text="⚠️ Hələlik heç bir şey edilmədi.",
             show_alert=True
-        )
+            )
