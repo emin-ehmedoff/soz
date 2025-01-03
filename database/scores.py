@@ -1,7 +1,5 @@
 # database/scores.py
 from .models import get_db
-
-
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -86,11 +84,7 @@ def get_global_rank(user_id):
         rank += 1
     return rank
 
-
-
-
-
-def update_scores(user_id, first_name, group_id, group_name, points=1):
+def update_scores(user_id, first_name, group_id, group_name, correct_answers_increment=0, host_count_increment=0, score_increment=0):
     db = get_db()
 
     # Update user score
@@ -98,7 +92,7 @@ def update_scores(user_id, first_name, group_id, group_name, points=1):
         {'user_id': user_id},
         {
             '$set': {'first_name': first_name},
-            '$inc': {'totalScore': points}
+            '$inc': {'totalScore': score_increment}
         },
         upsert=True
     )
@@ -108,7 +102,7 @@ def update_scores(user_id, first_name, group_id, group_name, points=1):
         {'group_id': group_id},
         {
             '$set': {'groupName': group_name},
-            '$inc': {'totalScore': points}
+            '$inc': {'totalScore': score_increment}
         },
         upsert=True
     )
@@ -120,7 +114,11 @@ def update_scores(user_id, first_name, group_id, group_name, points=1):
             'group_id': group_id
         },
         {
-            '$inc': {'score': points},
+            '$inc': {
+                'score': score_increment,
+                'correct_answers': correct_answers_increment,
+                'host_count': host_count_increment
+            },
             '$set': {
                 'first_name': first_name,
                 'groupName': group_name
