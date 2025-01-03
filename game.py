@@ -159,7 +159,7 @@ def check_answer(update: Update, context: CallbackContext):
         except Exception as error:
             logging.error('Xal yeniləmə xətası: %s', error)
             context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
-            ]
+            
             reply_markup = InlineKeyboardMarkup(keyboard)
 
             message = (
