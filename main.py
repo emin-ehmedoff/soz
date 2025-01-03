@@ -208,7 +208,7 @@ def start_bot():
         dp = updater.dispatcher
 
         dp.add_handler(CommandHandler("start", start_game))
-        dp.add_handler(CommandHandler("start_personal", start_personal)
+        dp.add_handler(CommandHandler("start_personal", start_personal))
         dp.add_handler(CommandHandler("stop", stop_game))
         dp.add_handler(MessageHandler(Filters.text & ~Filters.command, check_answer))
         dp.add_handler(CallbackQueryHandler(button_callback))
