@@ -103,6 +103,38 @@ def show_user_rating(update: Update, context: CallbackContext):
         logger.error('İstifadəçi reytinqi xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
+def show_top_hosts(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    try:
+        # Müvafiq məlumatları əldə edin (bu hissəni öz tələblərinizə uyğunlaşdırın)
+        hosts = db.user_groups.aggregate([
+            {
+                '$group': {
+                    '_id': '$user_id',
+                    'host_count': {'$sum': '$host_count'}
+                }
+            },
+            {'$sort': {'host_count': -1}},
+            {'$limit': 25}
+        ])
+
+        hosts = list(hosts)
+        if not hosts:
+            context.bot.send_message(chat_id, "⚠️ Hələ heç bir aparıcı yoxdur!")
+            return
+
+        leaderboard = "🏅 Top 25 Aparıcı:\n\n"
+        for index, host in enumerate(hosts, 1):
+            user = db.users.find_one({'user_id': host['_id']})
+            leaderboard += f"{index}. {user['first_name']} - {host['host_count']} dəfə\n"
+
+        context.bot.send_message(chat_id, leaderboard)
+    except Exception as error:
+        logger.error('Top aparıcılar xətası: %s', error)
+        context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
+
+
+
 def start_bot():
     logger.info('🚀 Bot başladılır...')
     try:
