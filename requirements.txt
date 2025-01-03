@@ -1,0 +1,4 @@
+python-telegram-bot
+python-dotenv==0.19.2
+pymongo==4.3.3
+telegram
