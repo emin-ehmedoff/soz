@@ -21,22 +21,56 @@ logger = logging.getLogger(__name__)
 
 
 
+# Start funksiyası
 def start(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
-    
-    # Yalnız şəxsi mesajlarda işləməsini təmin edin
+
+    # Yalnız şəxsi mesajlarda işləsin
     if update.effective_chat.type != Chat.PRIVATE:
         return
-    
-    # Start düymələri
+
+    # Düymələrin tərtibatı
     keyboard = [
+        [InlineKeyboardButton("Məni qrupa əlavə et", url="https://t.me/joinchat/your_group_invite_link")],
         [InlineKeyboardButton("Sahibim", url="https://t.me/username"), InlineKeyboardButton("Kömək", callback_data='help')],
-        [InlineKeyboardButton("Dəstək", url="https://t.me/support")],
-        [InlineKeyboardButton("Məni qrupa əlavə et", url="https://t.me/joinchat/your_group_invite_link")]  # Qrup dəvət linki burada əlavə olunur
+        [InlineKeyboardButton("Dəstək", url="https://t.me/support")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    
+
     update.message.reply_text('Səni qrupa əlavə etmək üçün aşağıdakı düymələrdən istifadə edə bilərsən:', reply_markup=reply_markup)
+
+# Help funksiyası
+def help_command(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+
+    # Kömək məlumatı və geri qayt düyməsi
+    keyboard = [
+        [InlineKeyboardButton("Geri Qayıt", callback_data='back')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    help_text = "Bu botun komandaları:\n\n" \
+                "/start - Botu başlatmaq\n" \
+                "/help - Kömək məlumatı\n" \
+                "/support - Dəstək almaq üçün\n"
+
+    query.edit_message_text(text=help_text, reply_markup=reply_markup)
+
+# Back funksiyası
+def back_command(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+
+    # Start menyusunu yenidən göstər
+    keyboard = [
+        [InlineKeyboardButton("Məni qrupa əlavə et", url="https://t.me/joinchat/your_group_invite_link")],
+        [InlineKeyboardButton("Sahibim", url="https://t.me/username"), InlineKeyboardButton("Kömək", callback_data='help')],
+        [InlineKeyboardButton("Dəstək", url="https://t.me/support")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    query.edit_message_text(text='Səni qrupa əlavə etmək üçün aşağıdakı düymələrdən istifadə edə bilərsən:', reply_markup=reply_markup)
 
 
 
