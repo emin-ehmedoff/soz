@@ -38,41 +38,6 @@ def start(update: Update, context: CallbackContext):
     
     update.message.reply_text('Səni qrupa əlavə etmək üçün aşağıdakı düymələrdən istifadə edə bilərsən:', reply_markup=reply_markup)
 
-def button_callback(update: Update, context: CallbackContext):
-    query = update.callback_query
-    query.answer()
-    
-    if query.data == 'help':
-        # Kömək mesajı və geri düyməsi
-        help_message = (
-            "Botun komandalari və nə etdikləri:\n"
-            "/start - Botu başlamaq\n"
-            "/stop - Oyunu dayandırmaq\n"
-            "/topplayers - Ən yüksək xallı oyunçuları göstərmək\n"
-            "/topgroups - Ən yüksək xallı qrupları göstərmək\n"
-            "/currentgroup - Cari qrup üzrə ən yüksək xallı oyunçuları göstərmək\n"
-            "/myreytinq - Şəxsi reytinqi göstərmək\n"
-            "/raparici - Ən çox aparıcı olmuş şəxsləri göstərmək\n"
-        )
-        
-        keyboard = [
-            [InlineKeyboardButton("Geri Qayıt", callback_data='start')],
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        query.edit_message_text(text=help_message, reply_markup=reply_markup)
-    
-    elif query.data == 'start':
-        # Start düymələri
-        keyboard = [
-            [InlineKeyboardButton("Sahibim", url="https://t.me/username"), InlineKeyboardButton("Kömək", callback_data='help')],
-            [InlineKeyboardButton("Dəstək", url="https://t.me/support")],
-            [InlineKeyboardButton("Məni qrupa əlavə et", url="https://t.me/joinchat/your_group_invite_link")]  # Qrup dəvət linki burada əlavə olunur
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        query.edit_message_text(text='Səni qrupa əlavə etmək üçün aşağıdakı düymələrdən istifadə edə bilərsən:', reply_markup=reply_markup)
-
 
 
 def show_top_players(update: Update, context: CallbackContext):
