@@ -97,7 +97,7 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
 
     try:
         # Update user score
-        db.users.update_one(
+        user_result = db.users.update_one(
             {'user_id': user_id},
             {
                 '$set': {'first_name': first_name},
@@ -105,10 +105,10 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
             },
             upsert=True
         )
-        logger.info(f"User {user_id} score updated successfully.")
+        logger.info(f"User {user_id} score updated successfully. Matched: {user_result.matched_count}, Modified: {user_result.modified_count}")
 
         # Update group score
-        db.groups.update_one(
+        group_result = db.groups.update_one(
             {'group_id': group_id},
             {
                 '$set': {'groupName': group_name},
@@ -116,10 +116,10 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
             },
             upsert=True
         )
-        logger.info(f"Group {group_id} score updated successfully.")
+        logger.info(f"Group {group_id} score updated successfully. Matched: {group_result.matched_count}, Modified: {group_result.modified_count}")
 
         # Update user-group relationship
-        db.user_groups.update_one(
+        user_group_result = db.user_groups.update_one(
             {
                 'user_id': user_id,
                 'group_id': group_id
@@ -137,10 +137,9 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
             },
             upsert=True
         )
-        logger.info(f"User-group relationship for user {user_id} and group {group_id} updated successfully.")
+        logger.info(f"User-group relationship for user {user_id} and group {group_id} updated successfully. Matched: {user_group_result.matched_count}, Modified: {user_group_result.modified_count}")
     except Exception as e:
         logger.error(f"Error updating scores: {e}")
-
 def get_top_users(limit=25):
     db = get_db()
     try:
