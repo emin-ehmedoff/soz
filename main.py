@@ -52,7 +52,7 @@ def show_top_groups(update: Update, context: CallbackContext):
 
         context.bot.send_message(chat_id, leaderboard)
     except Exception as error:
-        logger.error('Top qrfirst_nameuplar xətası: %s', error)
+        logger.error('Top qruplar xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
 def show_current_group(update: Update, context: CallbackContext):
@@ -72,7 +72,6 @@ def show_current_group(update: Update, context: CallbackContext):
     except Exception as error:
         logger.error('Qrup top oyunçular xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
-
 
 def show_user_rating(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
@@ -102,7 +101,6 @@ def show_user_rating(update: Update, context: CallbackContext):
     except Exception as error:
         logger.error('İstifadəçi reytinqi xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
-
 
 def show_top_hosts(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
@@ -134,7 +132,6 @@ def show_top_hosts(update: Update, context: CallbackContext):
     except Exception as error:
         logger.error('Top aparıcılar xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
-
 
 def start_bot():
     logger.info('🚀 Bot başladılır...')
