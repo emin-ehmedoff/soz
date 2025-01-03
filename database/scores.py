@@ -92,12 +92,13 @@ def get_global_rank(user_id):
         rank += 1
     return rank
 
+
 def update_scores(user_id, first_name, group_id, group_name, correct_answers_increment=0, host_count_increment=0, score_increment=0):
     db = get_db()
 
     try:
         # Update user score
-        user_result = db.users.update_one(
+        db.users.update_one(
             {'user_id': user_id},
             {
                 '$set': {'first_name': first_name},
@@ -105,10 +106,9 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
             },
             upsert=True
         )
-        logger.info(f"User {user_id} score updated successfully. Matched: {user_result.matched_count}, Modified: {user_result.modified_count}")
 
         # Update group score
-        group_result = db.groups.update_one(
+        db.groups.update_one(
             {'group_id': group_id},
             {
                 '$set': {'groupName': group_name},
@@ -116,10 +116,9 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
             },
             upsert=True
         )
-        logger.info(f"Group {group_id} score updated successfully. Matched: {group_result.matched_count}, Modified: {group_result.modified_count}")
 
         # Update user-group relationship
-        user_group_result = db.user_groups.update_one(
+        db.user_groups.update_one(
             {
                 'user_id': user_id,
                 'group_id': group_id
@@ -137,21 +136,8 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
             },
             upsert=True
         )
-        logger.info(f"User-group relationship for user {user_id} and group {group_id} updated successfully. Matched: {user_group_result.matched_count}, Modified: {user_group_result.modified_count}")
     except Exception as e:
-        logger.error(f"Error updating scores: {e}")
-def get_top_users(limit=25):
-    db = get_db()
-    try:
-        users = list(db.users.find(
-            {},
-            {'_id': 0, 'user_id': 1, 'first_name': 1, 'totalScore': 1}
-        ).sort('totalScore', -1).limit(limit))
-        logger.info(f"Top users fetched successfully.")
-        return users
-    except Exception as e:
-        logger.error(f"Error fetching top users: {e}")
-        return []
+        print(f"Error updating scores: {e}")
 
 def get_top_groups(limit=25):
     db = get_db()
