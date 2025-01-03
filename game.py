@@ -115,7 +115,7 @@ def check_answer(update: Update, context: CallbackContext):
                 chat_id,
                 update.effective_chat.title
             )
-            
+
             db = get_db()  # db obyektini burada təyin edin
 
             # İstifadəçinin doğru cavab sayını artırın
@@ -125,22 +125,16 @@ def check_answer(update: Update, context: CallbackContext):
                 upsert=True
             )
 
-            # Aparıcı rejimində aparıcı sayını artır, yalnız mövcud aparıcının aparıcı sayısını artır
-            if game.mode == "host":
-                db.user_groups.update_one(
-                    {'user_id': game.host['id'], 'group_id': chat_id},
-                    {'$inc': {'host_count': 1}},
-                    upsert=True
-                )
+            # Aparıcı sayını artır, yalnız mövcud aparıcının aparıcı sayısını artır
+            db.user_groups.update_one(
+                {'user_id': game.host['id'], 'group_id': chat_id},
+                {'$inc': {'host_count': 1}},
+                upsert=True
+            )
 
-            # Tam oyun rejimində aparıcı sayını dəyiş
+            # Tam oyun rejimində aparıcı dəyişir
             if game.mode == "full":
                 game.set_host(update.effective_user.id, update.effective_user.username)
-                db.user_groups.update_one(
-                    {'user_id': update.effective_user.id, 'group_id': chat_id},
-                    {'$inc': {'host_count': 1}},
-                    upsert=True
-                )
             else:
                 old_word = game.current_word
                 while game.current_word == old_word:
