@@ -129,21 +129,39 @@ def update_scores(user_id, first_name, group_id, group_name, correct_answers_inc
 
 def get_top_users(limit=25):
     db = get_db()
-    return list(db.users.find(
-        {},
-        {'_id': 0, 'user_id': 1, 'first_name': 1, 'totalScore': 1}
-    ).sort('totalScore', -1).limit(limit))
+    try:
+        users = list(db.users.find(
+            {},
+            {'_id': 0, 'user_id': 1, 'first_name': 1, 'totalScore': 1}
+        ).sort('totalScore', -1).limit(limit))
+        logger.info(f"Top users fetched successfully.")
+        return users
+    except Exception as e:
+        logger.error(f"Error fetching top users: {e}")
+        return []
 
 def get_top_groups(limit=25):
     db = get_db()
-    return list(db.groups.find(
-        {},
-        {'_id': 0, 'group_id': 1, 'groupName': 1, 'totalScore': 1}
-    ).sort('totalScore', -1).limit(limit))
+    try:
+        groups = list(db.groups.find(
+            {},
+            {'_id': 0, 'group_id': 1, 'groupName': 1, 'totalScore': 1}
+        ).sort('totalScore', -1).limit(limit))
+        logger.info(f"Top groups fetched successfully.")
+        return groups
+    except Exception as e:
+        logger.error(f"Error fetching top groups: {e}")
+        return []
 
 def get_group_top_users(group_id, limit=25):
     db = get_db()
-    return list(db.user_groups.find(
-        {'group_id': group_id},
-        {'_id': 0, 'user_id': 1, 'first_name': 1, 'score': 1}
-    ).sort('score', -1).limit(limit))
+    try:
+        users = list(db.user_groups.find(
+            {'group_id': group_id},
+            {'_id': 0, 'user_id': 1, 'first_name': 1, 'score': 1}
+        ).sort('score', -1).limit(limit))
+        logger.info(f"Top users for group {group_id} fetched successfully.")
+        return users
+    except Exception as e:
+        logger.error(f"Error fetching top users for group {group_id}: {e}")
+        return []
