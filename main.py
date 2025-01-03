@@ -72,7 +72,6 @@ def show_current_group(update: Update, context: CallbackContext):
     except Exception as error:
         logger.error('Qrup top oyunçular xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
-
 def show_user_rating(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
