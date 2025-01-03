@@ -159,6 +159,26 @@ def check_answer(update: Update, context: CallbackContext):
             logging.error('Xal yeniləmə xətası: %s', error)
             context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
+def current_group(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    try:
+        db = get_db()  # db obyektini burada təyin edin
+        user_groups = db.user_groups.find({'group_id': chat_id})
+
+        if not user_groups:
+            context.bot.send_message(chat_id, "⚠️ Bu qrupda heç bir oyun məlumatı yoxdur!")
+            return
+
+        leaderboard = "🏅 Mövcud Qrupun Xalları:\n\n"
+        for user_group in user_groups:
+            user = db.users.find_one({'user_id': user_group['user_id']})
+            leaderboard += f"{user['first_name']} - Doğru cavablar: {user_group.get('correct_answers', 0)}, Aparıcı sayısı: {user_group.get('host_count', 0)}\n"
+
+        context.bot.send_message(chat_id, leaderboard)
+    except Exception as error:
+        logging.error('Mövcud qrup xətası: %s', error)
+        context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
+
 def button_callback(update: Update, context: CallbackContext):
     query = update.callback_query
     chat_id = query.message.chat.id
