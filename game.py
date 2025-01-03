@@ -2,6 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from database.scores import update_scores
 from words import words  # words obyektini burada import edin
+from database.models import get_db  # db obyektini burada import edin
 import random
 import logging
 import time
@@ -115,6 +116,8 @@ def check_answer(update: Update, context: CallbackContext):
                 chat_id,
                 update.effective_chat.title
             )
+
+            db = get_db()  # db obyektini burada təyin edin
 
             # Əgər tam rejimdirsə, aparıcı dəyişdirilir və aparıcı sayını artırırıq
             if game.mode == "full":
