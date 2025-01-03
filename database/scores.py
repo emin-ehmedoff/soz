@@ -42,6 +42,7 @@ def get_user_group_info(user_id, group_id):
     else:
         return None
 
+
 def get_user_global_info(user_id):
     user_global_info = db.user_groups.aggregate([
         {'$match': {'user_id': user_id}},
