@@ -92,8 +92,10 @@ def stats(update: Update, context: CallbackContext):
         update.message.reply_text("⚠️ Bu komanda yalnız bot sahibi üçün nəzərdə tutulub!")
         return
     
-    # Statistik məlumatları toplayın
-    group_count = len(context.bot.get_chat_members_count)
+    # Botun olduğu qrupların sayını hesablayın
+    group_count = len(context.bot.get_updates())
+    
+    # Aktiv oyunların sayını və toplam oyun sayını hesablayın
     active_game_count = sum(1 for game in games.values() if game.is_active)
     total_games_played = game_play_count
     
@@ -105,7 +107,6 @@ def stats(update: Update, context: CallbackContext):
     - Toplam oyun sayı: {total_games_played}
     """
     update.message.reply_text(stats_message)
-
 
 
 
