@@ -19,11 +19,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-
-
-
-
 def show_top_players(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     try:
@@ -79,7 +74,6 @@ def show_current_group(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
 
-# Mövcud funksiyaların altına əlavə edin
 def show_user_rating(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
@@ -109,7 +103,6 @@ def show_user_rating(update: Update, context: CallbackContext):
         logger.error('İstifadəçi reytinqi xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
-# start_bot funksiyasına əlavə edin
 def start_bot():
     logger.info('🚀 Bot başladılır...')
     try:
@@ -119,7 +112,7 @@ def start_bot():
 
         dp.add_handler(CommandHandler("start", start_game))
         dp.add_handler(CommandHandler("stop", stop_game))
-        dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_answer))
+        dp.add_handler(MessageHandler(Filters.text & ~Filters.command, check_answer))
         dp.add_handler(CallbackQueryHandler(button_callback))
 
         dp.add_handler(CommandHandler("topplayers", show_top_players))
