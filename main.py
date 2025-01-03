@@ -12,6 +12,15 @@ from database.scores import get_user_group_info, get_user_global_info
 
 load_dotenv()
 
+# Bot sahibi Telegram ID (bot sahibinin Telegram ID-sini buraya əlavə edin)
+BOT_OWNER_ID = 5273794514  # Bot sahibinin ID-sini buraya əlavə edin
+
+# Global dəyişənlər
+games = {}  # Aktiv oyunları təyin etmək üçün istifadə edilən lüğət
+game_play_count = 0  # Botla neçə dəfə oyun oynandığını təyin etmək üçün istifadə edilən dəyişən
+
+
+
 # Logging configuration
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -71,6 +80,34 @@ def back_command(update: Update, context: CallbackContext):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     query.edit_message_text(text='Səni qrupa əlavə etmək üçün aşağıdakı düymələrdən istifadə edə bilərsən:', reply_markup=reply_markup)
+
+
+
+# Stats command (sadece bot sahibi üçün)
+def stats(update: Update, context: CallbackContext):
+    user_id = update.message.from_user.id
+    
+    # Yalnız bot sahibinə işləməsini təmin edin
+    if user_id != BOT_OWNER_ID:
+        update.message.reply_text("⚠️ Bu komanda yalnız bot sahibi üçün nəzərdə tutulub!")
+        return
+    
+    # Statistik məlumatları toplayın
+    group_count = len(context.bot.get_chat_members_count)
+    active_game_count = sum(1 for game in games.values() if game.is_active)
+    total_games_played = game_play_count
+    
+    # Statistik məlumatları göstər
+    stats_message = f"""
+    📊 Bot Statistikası:
+    - Qrupların sayı: {group_count}
+    - Aktiv oyunların sayı: {active_game_count}
+    - Toplam oyun sayı: {total_games_played}
+    """
+    update.message.reply_text(stats_message)
+
+
+
 
 
 
@@ -208,6 +245,7 @@ def start_bot():
 
         dp.add_handler(CommandHandler("game", game))
         dp.add_handler(CommandHandler("start", start))
+        dp.add_handler(CommandHandler("stats", stats))  # Yeni komanda əlavə edildi
         dp.add_handler(CallbackQueryHandler(help_command, pattern='^help$'))
         dp.add_handler(CallbackQueryHandler(back_command, pattern='^back$'))
         dp.add_handler(CommandHandler("stop", stop_game))
