@@ -113,19 +113,11 @@ def check_answer(update: Update, context: CallbackContext):
                 update.effective_user.id,
                 update.effective_user.first_name,
                 chat_id,
-                update.effective_chat.title
+                update.effective_chat.title,
+                points=10  # İstifadəçinin xalını artırmaq üçün dəyəri burada təyin edin
             )
 
             db = get_db()  # db obyektini burada təyin edin
-
-            # İstifadəçinin doğru cavab sayını və ümumi xalı artırın
-            db.user_groups.update_one(
-                {'user_id': update.effective_user.id, 'group_id': chat_id},
-                {
-                    '$inc': {'correct_answers': 1, 'total_score': 10}  # Xalı artırmaq üçün dəyəri burada təyin edin
-                },
-                upsert=True
-            )
 
             # Aparıcı sayını artır, yalnız mövcud aparıcının aparıcı sayısını artır
             db.user_groups.update_one(
