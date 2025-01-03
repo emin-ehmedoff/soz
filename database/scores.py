@@ -3,6 +3,7 @@ from .models import get_db
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import logging
 
 # .env faylını yükləyin
 load_dotenv()
@@ -17,6 +18,13 @@ if not DB_NAME:
     raise ValueError("DB_NAME mühit dəyişəni təyin edilməyib.")
 
 db = client[DB_NAME]
+
+# Logging configuration
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 def get_user_group_info(user_id, group_id):
     user_group_info = db.user_groups.find_one({
