@@ -1,8 +1,8 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from database.scores import update_scores
-from words import words  # words obyektini burada import edin
-from database.models import get_db  # db obyektini burada import edin
+from words import words
+from database.models import get_db
 import random
 import logging
 import time
@@ -18,27 +18,26 @@ class Game:
     def set_host(self, user_id, username, mode=None):
         self.host = {'id': user_id, 'username': username}
         self.current_word = random.choice(words)
-        # Only set mode if provided, otherwise keep existing mode
         if mode is not None:
             self.mode = mode
-        self.last_activity_time = time.time()  # Oyun başladığında aktivlik vaxtını yenilə
+        self.last_activity_time = time.time()
 
     def remove_host(self):
         self.host = None
         self.current_word = None
-        self.last_activity_time = time.time()  # Oyun başladığında aktivlik vaxtını yenilə
+        self.last_activity_time = time.time()
 
     def start_game(self):
         self.is_active = True
-        self.last_activity_time = time.time()  # Oyun başladığında aktivlik vaxtını yenilə
+        self.last_activity_time = time.time()
 
     def stop_game(self):
         self.is_active = False
         self.remove_host()
-        self.mode = None  # Only reset mode when game stops completely
+        self.mode = None
 
     def update_last_activity_time(self):
-        self.last_activity_time = time.time()  # Bot hər mesaj yazanda sonuncu aktivlik vaxtını yenilə
+        self.last_activity_time = time.time()
 
 games = {}
 
@@ -118,6 +117,13 @@ def check_answer(update: Update, context: CallbackContext):
             )
 
             db = get_db()  # db obyektini burada təyin edin
+
+            # İstifadəçinin doğru cavab sayını artırın
+            db.user_groups.update_one(
+                {'user_id': update.effective_user.id, 'group_id': chat_id},
+                {'$inc': {'correct_answers': 1}},
+                upsert=True
+            )
 
             if game.mode == "full":
                 # Mövcud aparıcının aparıcı sayını artırın
