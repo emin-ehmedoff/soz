@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from database.scores import update_scores, get_top_users, get_top_groups, get_group_top_users
 from words import words
 from database.models import get_db
-from game import start_game, stop_game, check_answer, button_callback
+from game import game, stop_game, check_answer, button_callback
 from database.scores import get_user_group_info, get_user_global_info
 
 load_dotenv()
