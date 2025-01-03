@@ -14,8 +14,11 @@ MONGODB_URI = os.getenv('MONGODB_URI')
 client = MongoClient(MONGODB_URI)
 
 # Verilənlər bazası adını .env faylından oxuyun
-DATABASE_NAME = os.getenv('DATABASE_NAME')
-db = client[DATABASE_NAME]
+DB_NAME = os.getenv('DB_NAME')
+if not DB_NAME:
+    raise ValueError("DB_NAME mühit dəyişəni təyin edilməyib.")
+
+db = client[DB_NAME]
 
 def get_user_group_info(user_id, group_id):
     user_group_info = db.user_groups.find_one({
