@@ -208,6 +208,8 @@ def start_bot():
 
         dp.add_handler(CommandHandler("game", game))
         dp.add_handler(CommandHandler("start", start))
+        dp.add_handler(CallbackQueryHandler(help_command, pattern='^help$'))
+    dp.add_handler(CallbackQueryHandler(back_command, pattern='^back$'))
         dp.add_handler(CommandHandler("stop", stop_game))
         dp.add_handler(MessageHandler(Filters.text & ~Filters.command, check_answer))
         dp.add_handler(CallbackQueryHandler(button_callback))
