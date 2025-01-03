@@ -8,6 +8,7 @@ from database.scores import update_scores, get_top_users, get_top_groups, get_gr
 from words import words
 from database.models import get_db
 from game import start_game, stop_game, check_answer, button_callback
+from database.scores import get_user_group_info, get_user_global_info
 
 load_dotenv()
 
@@ -77,6 +78,38 @@ def show_current_group(update: Update, context: CallbackContext):
         logger.error('Qrup top oyunçular xətası: %s', error)
         context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
 
+
+# Mövcud funksiyaların altına əlavə edin
+def show_user_rating(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
+    try:
+        user_group_info = get_user_group_info(user_id, chat_id)
+        user_global_info = get_user_global_info(user_id)
+
+        if not user_group_info or not user_global_info:
+            context.bot.send_message(chat_id, "⚠️ İstifadəçi haqqında məlumat tapılmadı!")
+            return
+
+        message = (
+            f"Bu qrupda:\n"
+            f"✅ Doğru cavablar: {user_group_info['correct_answers']} dəfə\n"
+            f"📢 Aparıcı olma: {user_group_info['host_count']} dəfə\n"
+            f"📈 Reytinq: {user_group_info['rank']} sırada\n"
+            f"⭐ Ümumi xal: {user_group_info['total_score']}\n\n"
+            f"Ümumi:\n"
+            f"✅ Doğru cavablar: {user_global_info['correct_answers']} dəfə\n"
+            f"📢 Aparıcı olma: {user_global_info['host_count']} dəfə\n"
+            f"📈 Global reytinq: {user_global_info['rank']} sırada\n"
+            f"⭐ Ümumi xal: {user_global_info['total_score']}\n"
+        )
+
+        context.bot.send_message(chat_id, message)
+    except Exception as error:
+        logger.error('İstifadəçi reytinqi xətası: %s', error)
+        context.bot.send_message(chat_id, "⚠️ Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.")
+
+# start_bot funksiyasına əlavə edin
 def start_bot():
     logger.info('🚀 Bot başladılır...')
     try:
@@ -86,12 +119,14 @@ def start_bot():
 
         dp.add_handler(CommandHandler("start", start_game))
         dp.add_handler(CommandHandler("stop", stop_game))
-        dp.add_handler(MessageHandler(Filters.text & ~Filters.command, check_answer))
+        dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_answer))
         dp.add_handler(CallbackQueryHandler(button_callback))
 
         dp.add_handler(CommandHandler("topplayers", show_top_players))
         dp.add_handler(CommandHandler("topgroups", show_top_groups))
         dp.add_handler(CommandHandler("currentgroup", show_current_group))
+        dp.add_handler(CommandHandler("raparici", show_top_hosts))  
+        dp.add_handler(CommandHandler("myreytinq", show_user_rating))  # Yeni komut əlavə edildi
 
         updater.start_polling()
         updater.idle()
