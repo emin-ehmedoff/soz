@@ -81,6 +81,14 @@ def game(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id, "⚠️ Oyunda artıq aparıcı var!")
         return
 
+    # MongoDB'ye oyun başlama bilgisini kaydet
+    db = get_db()
+    db.groups.update_one(
+        {'group_id': chat_id},
+        {'$inc': {'games_started': 1}},
+        upsert=True
+    )
+
     keyboard = [
         [
             InlineKeyboardButton("🎮 Oyun Başlat", callback_data='start_full_game'),
