@@ -172,3 +172,20 @@ def get_top_users(limit=25):
     except Exception as e:
         logger.error(f"Error fetching top users: {e}")
         return []
+
+
+def get_started_users_count():
+    db = get_db()
+    return db.started_users.count_documents({})
+
+def get_groups_count():
+    db = get_db()
+    return db.groups.count_documents({})
+
+def get_total_games_started():
+    db = get_db()
+    total_games = db.groups.aggregate([
+        {'$group': {'_id': None, 'total': {'$sum': '$games_started'}}}
+    ])
+    total = list(total_games)
+    return total[0]['total'] if total else 0
