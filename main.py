@@ -109,28 +109,35 @@ def bot_added_to_group(update: Update, context: CallbackContext):
 # Stats command (sadece bot sahibi üçün)
 def stats(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
-    
+
     # Yalnız bot sahibinə işləməsini təmin edin
     if user_id != BOT_OWNER_ID:
         update.message.reply_text("⚠️ Bu komanda yalnız bot sahibi üçün nəzərdə tutulub!")
         return
     
-    # Botun olduğu qrupların sayını hesablayın
-    group_count = len(context.bot.get_updates())
+    # Botu başlatan istifadəçilərin sayını hesablayın
+    started_users_count = get_started_users_count()
     
+    # Botun olduğu qrupların sayını hesablayın
+    group_count = get_groups_count()
+    
+    # Başlatılan toplam oyun sayını hesablayın
+    total_games_started = get_total_games_started()
+
     # Aktiv oyunların sayını və toplam oyun sayını hesablayın
     active_game_count = sum(1 for game in games.values() if game.is_active)
     total_games_played = game_play_count
-    
-    # Statistik məlumatları göstər
+
+    # Statistik məlumatları göstərin
     stats_message = f"""
-    📊 Bot Statistikası:
-    - Qrupların sayı: {group_count}
+    📊 Bot Statistikas:
+    - Botu başlatan istifadəçilərin sayı: {started_users_count}
+    - Botun olduğu qrupların sayı: {group_count}
+    - Başlatılan toplam oyun sayı: {total_games_started}
     - Aktiv oyunların sayı: {active_game_count}
     - Toplam oyun sayı: {total_games_played}
     """
     update.message.reply_text(stats_message)
-
 
 
 
