@@ -4,7 +4,7 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Chat
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler, CallbackContext, Filters
 from dotenv import load_dotenv
-from database.scores import update_scores, get_top_users, get_top_groups, get_group_top_users
+from database.scores import update_scores, get_top_users, get_top_groups, get_group_top_users, get_started_users_count, get_groups_count, get_total_games_started
 from words import words
 from database.models import get_db
 from game import game, stop_game, check_answer, button_callback
@@ -30,13 +30,21 @@ logger = logging.getLogger(__name__)
 
 
 
-# Start funksiyası
 def start(update: Update, context: CallbackContext):
-    chat_id = update.effective_chat.id
+    user_id = update.message.from_user.id
+    user_first_name = update.message.from_user.first_name
 
     # Yalnız şəxsi mesajlarda işləsin
     if update.effective_chat.type != Chat.PRIVATE:
         return
+
+    # Kullanıcıyı MongoDB'ye kaydet
+    db = get_db()
+    db.started_users.update_one(
+        {'user_id': user_id},
+        {'$set': {'first_name': user_first_name}},
+        upsert=True
+    )
 
     # Düymələrin tərtibatı
     keyboard = [
@@ -81,6 +89,21 @@ def back_command(update: Update, context: CallbackContext):
 
     query.edit_message_text(text='Səni qrupa əlavə etmək üçün aşağıdakı düymələrdən istifadə edə bilərsən:', reply_markup=reply_markup)
 
+
+def bot_added_to_group(update: Update, context: CallbackContext):
+    chat = update.effective_chat
+
+    # Yalnız grup və süper grup tiplerini kontrol edin
+    if chat.type not in [Chat.GROUP, Chat.SUPERGROUP]:
+        return
+
+    # Grubu MongoDB'ye kaydet
+    db = get_db()
+    db.groups.update_one(
+        {'group_id': chat.id},
+        {'$set': {'group_name': chat.title}},
+        upsert=True
+    )
 
 
 # Stats command (sadece bot sahibi üçün)
